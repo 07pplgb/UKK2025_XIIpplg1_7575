@@ -16,7 +16,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['email'])) {
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            if (password_verify($password, $row['password'])) {            
+            if (password_verify($password, $row['password'])) {   
+                $_SESSION['user'] = [
+                    "id_user" => $row['id_user']
+                ];         
                 header("Location: index.php");
                 exit();
             } else {
@@ -45,7 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['email'])) {
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background: linear-gradient(135deg,rgb(106, 241, 49),rgb(162, 56, 249));
+            background: linear-gradient(135deg,#FFEF00,rgb(162, 56, 249));
         }
         .login-container {
             background: white;

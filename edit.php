@@ -10,7 +10,7 @@ if (!isset($_GET['id'])) {
 $task_id = $_GET['id'];
 
 // Ambil data tugas berdasarkan ID
-$stmt = $conn->prepare("SELECT * FROM todos WHERE id = ?");
+$stmt = $conn->prepare("SELECT * FROM tasks WHERE id = ?");
 $stmt->bind_param("i", $task_id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -26,7 +26,7 @@ if (!$task) {
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edited_task'])) {
     $edited_task = trim($_POST['edited_task']);
     if (!empty($edited_task)) {
-        $stmt = $conn->prepare("UPDATE todos SET task = ? WHERE id = ?");
+        $stmt = $conn->prepare("UPDATE tasks SET task = ? WHERE id = ?");
         $stmt->bind_param("si", $edited_task, $task_id);
         $stmt->execute();
         $stmt->close();

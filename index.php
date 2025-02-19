@@ -3,23 +3,12 @@ session_start();
 include 'connect.php'; // Menyertakan koneksi ke database
 
 // Menambahkan tugas baru
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['task']) && !isset($_POST['edit_task_id'])) {
-    $new_task = trim($_POST['task']);
-    if (!empty($new_task)) {
-        // Menyimpan tugas ke dalam database
-        $stmt = $conn->prepare("INSERT INTO todos (task, status) VALUES (?, 'pending')");
-        $stmt->bind_param("s", $new_task);
-        $stmt->execute();
-        $stmt->close();
-    }
-    header("Location: " . $_SERVER['PHP_SELF']);
-    exit;
-}
+
 
 // Menghapus tugas
 if (isset($_GET['delete'])) {
     $task_index = $_GET['delete'];
-    $stmt = $conn->prepare("DELETE FROM todos WHERE id = ?");
+    $stmt = $conn->prepare("DELETE FROM tasks WHERE id = ?");
     $stmt->bind_param("i", $task_index);
     $stmt->execute();
     $stmt->close();
@@ -33,7 +22,7 @@ if (isset($_GET['toggle_status'])) {
     $current_status = $_GET['status']; 
     $new_status = ($current_status == 'pending') ? 'completed' : 'pending';
 
-    $stmt = $conn->prepare("UPDATE todos SET status = ? WHERE id = ?");
+    $stmt = $conn->prepare("UPDATE tasks SET status = ? WHERE id = ?");
     $stmt->bind_param("si", $new_status, $task_index);
     $stmt->execute();
     $stmt->close();
@@ -46,7 +35,7 @@ if (isset($_POST['edit_task_id']) && isset($_POST['edited_task'])) {
     $edit_task_id = $_POST['edit_task_id'];
     $edited_task = trim($_POST['edited_task']);
     if (!empty($edited_task)) {
-        $stmt = $conn->prepare("UPDATE todos SET task = ? WHERE id = ?");
+        $stmt = $conn->prepare("UPDATE tasks SET task = ? WHERE id = ?");
         $stmt->bind_param("si", $edited_task, $edit_task_id);
         $stmt->execute();
         $stmt->close();
@@ -57,7 +46,7 @@ if (isset($_POST['edit_task_id']) && isset($_POST['edited_task'])) {
 
 // Pencarian tugas
 $filtered_tasks = [];
-$sql = "SELECT * FROM todos";
+$sql = "SELECT * FROM tasks";
 if (isset($_GET['search']) && !empty($_GET['search'])) {
     $search_query = $_GET['search'];
     $sql .= " WHERE task LIKE '%" . $conn->real_escape_string($search_query) . "%'";
@@ -219,8 +208,9 @@ button {
 
     <!-- Form untuk menambahkan tugas -->
     <form method="POST" class="d-flex justify-content-center">
-        <input type="text" name="task" class="form-control w-50" placeholder="Tambah tugas baru" required>
-        <button type="submit" class="btn btn-primary ms-2">Tambah</button>
+        <a type="submit" href="tamba_tugas.php" class="btn btn-primary ms-2">Tambah tugas </a>
+        <a type="submit" href="tamba_kategori.php" class="btn btn-primary ms-2">Tambah kategori</a>
+
     </form>
 
     <!-- Form Pencarian Tugas -->
@@ -268,7 +258,7 @@ button {
     <?php if (isset($_GET['edit'])): ?>
         <?php
         $edit_id = $_GET['edit'];
-        $stmt = $conn->prepare("SELECT * FROM todos WHERE id = ?");
+        $stmt = $conn->prepare("SELECT * FROM tasks WHERE id = ?");
         $stmt->bind_param("i", $edit_id);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -281,6 +271,7 @@ button {
             <button type="submit" class="btn btn-warning ms-2">Simpan Edit</button>
         </form>
     <?php endif; ?>
+    
 </div>
 
 
