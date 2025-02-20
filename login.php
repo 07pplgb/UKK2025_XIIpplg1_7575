@@ -1,6 +1,6 @@
 <?php
 include 'connect.php';
-session_start();
+session_start(); // Pastikan session dimulai sebelum ada output
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['email'])) {
     $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
@@ -9,17 +9,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['email'])) {
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = "Format email tidak valid.";
     } else {
-        $stmt = $conn->prepare("SELECT * FROM user WHERE email = ?");
+        $stmt = $conn->prepare("SELECT id_user, password FROM user WHERE email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            if (password_verify($password, $row['password'])) {   
-                $_SESSION['user'] = [
-                    "id_user" => $row['id_user']
-                ];         
+            if (password_verify($password, $row['password'])) {
+                // Simpan session dengan nama yang mudah dipahami dan konsisten
+                $_SESSION['user_id'] = $row['id_user'];
+
+                // Redirect ke halaman utama
                 header("Location: index.php");
                 exit();
             } else {
@@ -33,6 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['email'])) {
     }
 }
 ?>
+
 
 
 <!DOCTYPE html>

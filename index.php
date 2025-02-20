@@ -1,9 +1,6 @@
 <?php
+include 'connect.php';
 session_start();
-include 'connect.php'; // Menyertakan koneksi ke database
-
-// Menambahkan tugas baru
-
 
 // Menghapus tugas
 if (isset($_GET['delete'])) {
@@ -191,17 +188,30 @@ button {
 <body>
     <!-- Tombol untuk membuka drawer -->
     <button class="open-drawer-btn btn btn-primary m-3" onclick="toggleDrawer()">☰</button>
-
     <!-- Drawer Profil -->
     <div id="profile-drawer" class="profile-drawer p-3">
         <button class="close-drawer-btn btn btn-danger" onclick="toggleDrawer()">×</button>
         <div class="text-center">
             <img src="rai.jpg" alt="Foto Profil" class="profile-image">
-            <h2><?php echo $_SESSION['user_name'] ?? 'Dimas Agung Prasetyo'; ?></h2>
+            <h4><?php echo $_SESSION['user_name'] ?? 'Dimas Agung Prasetyo'; ?></h4>
             <p><?php echo $_SESSION['user_email'] ?? 'dimas@gmail.com'; ?></p>
-            <a href="logout.php" class="btn btn-danger">Log Out</a>
+
+            <!-- Menu Navigasi -->
+            <div class="list-group my-3">
+                <a href="index.php" class="list-group-item list-group-item-action d-flex align-items-center">
+                    <i class="fas fa-home me-2"></i> Home
+                </a>
+                <a href="history.php" class="list-group-item list-group-item-action d-flex align-items-center">
+                    <i class="fas fa-history me-2"></i> History
+                </a>
+                <a href="kategori.php" class="list-group-item list-group-item-action d-flex align-items-center">
+                    <i class="fas fa-th-list me-2"></i> Kategori
+                </a>
+            </div>
+            <a href="logout.php" class="btn btn-danger mt-3">Log Out</a>
         </div>
     </div>
+
 
     <div class="container">
     <h1 class="mt-3 text-center">To Do List</h1>
@@ -209,8 +219,6 @@ button {
     <!-- Form untuk menambahkan tugas -->
     <form method="POST" class="d-flex justify-content-center">
         <a type="submit" href="tamba_tugas.php" class="btn btn-primary ms-2">Tambah tugas </a>
-        <a type="submit" href="tamba_kategori.php" class="btn btn-primary ms-2">Tambah kategori</a>
-
     </form>
 
     <!-- Form Pencarian Tugas -->
@@ -219,13 +227,14 @@ button {
         <button type="submit" class="btn btn-secondary ms-2">Cari</button>
     </form>
 
-    <!-- Daftar Tugas -->
     <div class="task-list">
         <?php if (count($filtered_tasks) > 0): ?>
             <table class="table table-striped mt-3">
                 <thead>
                     <tr>
                         <th>Nama Tugas</th>
+             
+                        <th>Deskripsi</th>
                         <th>Status</th>
                         <th>Aksi</th>
                     </tr>
@@ -234,6 +243,8 @@ button {
                     <?php foreach ($filtered_tasks as $task): ?>
                         <tr>
                             <td><?php echo htmlspecialchars($task['task']); ?></td>
+                            
+                            <td><?php echo htmlspecialchars($task['description']); ?></td>
                             <td class="task-status">
                                 <?php echo $task['status'] == 'pending' ? 'Belum Selesai' : 'Selesai'; ?>
                             </td>
@@ -242,7 +253,6 @@ button {
                                     <?php echo $task['status'] == 'pending' ? 'Tandai Selesai' : 'Tandai Belum Selesai'; ?>
                                 </a>
                                 <a href="?delete=<?php echo $task['id']; ?>" class="btn btn-danger">Delete</a>
-                                <!-- Tombol Edit -->
                                 <a href="edit.php?id=<?php echo $task['id']; ?>" class="btn btn-info">Edit</a>
                             </td>
                         </tr>
@@ -253,6 +263,7 @@ button {
             <p class="text-center">Tidak ada tugas ditemukan.</p>
         <?php endif; ?>
     </div>
+
 
     <!-- Form Edit Tugas -->
     <?php if (isset($_GET['edit'])): ?>
@@ -274,6 +285,7 @@ button {
     
 </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
 
     <script>
         function toggleDrawer() {
